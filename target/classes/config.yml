@@ -36,7 +36,7 @@ General:
     money: "console: money give %player% %cmd_arg1%"
 
 # To add cool hotkeys in your server.
-# More information: https://github.com/momoservertw/HotkeyPlus/wiki/HotKey
+# More information: https://github.com/momoservertw/HotkeyPlus/wiki/Hotkey
 HotKey:
   Enable: true
   Keyboard:

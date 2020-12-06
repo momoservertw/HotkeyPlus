@@ -1,0 +1,38 @@
+name: HotkeyPlus
+main: tw.momocraft.hotkeyplus.HotkeyPlus
+author: Momocraft
+api-version: 1.13
+version: 1.0.0
+description: To add cool hotkeys in your server.
+softdepend: [ Vault, PlayerPoints, PlaceHolderAPI ]
+
+commands:
+  hotkeyplus:
+    description: Displays main command menu.
+    permission: hotkeyplus.use
+    aliases: [ hkp ]
+    usage: |
+      /hotkeyplus
+
+permissions:
+  hotkeyplus.*:
+    description: Allows use of all commands and feature.
+    default: op
+    children:
+      hotkeyplus.use: true
+      HotkeyPlus.command.*: true
+  HotkeyPlus.use:
+    description: Allows use of basic commands.
+    default: true
+  HotkeyPlus.command.*:
+    description: Allows use all commands.
+    default: op
+    children:
+      HotkeyPlus.command.reload: true
+      HotkeyPlus.command.version: true
+  HotkeyPlus.command.reload:
+    description: Allows use of /HotkeyPlus command reload.
+    default: op
+  HotkeyPlus.command.version:
+    description: Allows use of command /HotkeyPlus version.
+    default: op

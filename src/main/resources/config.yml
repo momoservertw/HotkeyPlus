@@ -1,0 +1,122 @@
+# ░░░░░░░░░░░░░░░   HotkeyPlus, By Momocraft♥   ░░░░░░░░░░░░░░░
+#  Spigot: https://www.spigotmc.org/resources/HotkeyPlus.85995/
+#  Wiki: https://github.com/momoservertw/HotkeyPlus/wiki
+# ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+Config-Version: 1
+Check-Updates: true
+Debugging: false
+
+General:
+  Settings:
+    Features:
+      # Changed these options need to restart the server.
+      Hook:
+        Vault: true
+        PlayerPoints: true
+        PlaceHolderAPI: true
+  # The settings for custom commands.
+  # More information: https://github.com/momoservertw/HotkeyPlus/wiki/Custom-Command
+  Custom-Commands:
+    Settings:
+      Log:
+        Default:
+          # Creating new file if the modified date is difference.
+          New-File: true
+          To-Zip: true
+        Custom:
+          New-File: false
+          To-Zip: true
+          Path: "plugin//CustomLogs"
+          Name: "latest"
+    # To send frequently used commands with placeholders.
+  Groups:
+    reward: "message: &6&lReward&c✤ &f%cmd_arg1%"
+    awards: "message: &d✧ &f%cmd_arg1% &d✧"
+    cgl: "broadcast: &6Congratulate &e%player% &6use &f%cmd_arg1% &8- &6Get the %cmd_arg2% &7<&f%cmd_arg3%&7>"
+    money: "console: money give %player% %cmd_arg1%"
+
+# To add cool hotkeys in your server.
+# More information: https://github.com/momoservertw/HotkeyPlus/wiki/HotKey
+HotKey:
+  Enable: true
+  Keyboard:
+    Enable: true
+    Settings:
+      Cooldown:
+        Enable: true
+        Interval: 20
+        Message: false
+    Groups:
+      ShiftF:
+        Enable: true
+        Slot: -1
+        Cancel: true
+        Commands:
+          - "console: say command Shift + F"
+      Shift1:
+        Enable: true
+        Slot: 0
+        Cancel: true
+        Commands:
+          - "console: say command Shift + 1"
+      Shift2:
+        Enable: true
+        Slot: 1
+        Cancel: true
+        Commands:
+          - "console: say command Shift + 2"
+      Shift3:
+        Enable: true
+        Slot: 2
+        Cancel: true
+        Commands:
+          - "console: say command Shift + 3"
+      Shift4:
+        Enable: true
+        Slot: 3
+        Cancel: true
+        Commands:
+          - "console: say command Shift + 4"
+      Shift5:
+        Enable: true
+        Slot: 4
+        Cancel: true
+        Commands:
+          - "console: say command Shift + 5"
+      Shift6:
+        Enable: true
+        Slot: 5
+        Cancel: true
+        Commands:
+          - "console: say command Shift + 6"
+      Shift7:
+        Enable: true
+        Slot: 6
+        Cancel: true
+        Commands:
+          - "console: say command Shift + 7"
+      Shift8:
+        Enable: true
+        Slot: 7
+        Cancel: true
+        Commands:
+          - "console: say command Shift + 8"
+      Shift9:
+        Enable: true
+        Slot: 8
+        Cancel: true
+        Commands:
+          - "console: say command Shift + 9"
+
+Message:
+  prefix: "&f[&eHotkeyPlus&f] &r"
+  noPermission: '&cYou do not have permission to use that command!'
+  configReload: '&aConfiguration(s) Reloaded!'
+  unknownCommand: '&cUnknown command, See &e/HotkeyPlus help &cfor a list of commands.'
+  cooldown: '&fPlease try it again later.'
+  HotkeyPlus:
+    Commands:
+      title: "&8▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ &d&lHotkeyPlus &8▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩"
+      help: "&a/hotkeyplus help &8- &7This help menu."
+      reload: "&a/hotkeyplus reload &8- &7Reloads config file."
+      version: "&f/hotkeyplus version &8- &7Checks the plugin version and updates."

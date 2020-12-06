@@ -7,6 +7,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import tw.momocraft.hotkeyplus.handlers.ConfigHandler;
+import tw.momocraft.hotkeyplus.handlers.PermissionsHandler;
 import tw.momocraft.hotkeyplus.handlers.ServerHandler;
 import tw.momocraft.hotkeyplus.utils.*;
 
@@ -31,6 +32,10 @@ public class Hotkey implements Listener {
         String playerName = player.getName();
         KeyboardMap keyboardMap = ConfigHandler.getConfigPath().getHotkeyKeyboardProp().get(-1);
         if (keyboardMap != null) {
+            if (!PermissionsHandler.hasPermission(player, "hotkeyplus.hotkey.keyboard.*") &&
+                    !PermissionsHandler.hasPermission(player, "hotkeyplus.hotkey.keyboard." + keyboardMap.getGroupName())) {
+                return;
+            }
             String onCD = onCD(player);
             if (onCD.equals("true")) {
                 if (onCDDuplicate(player)) {
@@ -76,6 +81,10 @@ public class Hotkey implements Listener {
         }
         KeyboardMap keyboardMap = ConfigHandler.getConfigPath().getHotkeyKeyboardProp().get(newSlot);
         if (keyboardMap != null) {
+            if (!PermissionsHandler.hasPermission(player, "hotkeyplus.hotkey.keyboard.*") &&
+                    !PermissionsHandler.hasPermission(player, "hotkeyplus.hotkey.keyboard." + keyboardMap.getGroupName())) {
+                return;
+            }
             String onCD = onCD(player);
             if (onCD.equals("true")) {
                 if (onCDDuplicate(player)) {

@@ -76,6 +76,7 @@ public class ConfigPath {
                     continue;
                 }
                 keyboardMap = new KeyboardMap();
+                keyboardMap.setGroupName(group);
                 keyboardMap.setCancel(ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Keyboard.Groups." + group + ".Cancel"));
                 keyboardMap.setCommands(ConfigHandler.getConfig("config.yml").getStringList("HotKey.Keyboard.Groups." + group + ".Commands"));
                 hotkeyKeyboardProp.put(ConfigHandler.getConfig("config.yml").getInt("HotKey.Keyboard.Groups." + group + ".Slot"), keyboardMap);

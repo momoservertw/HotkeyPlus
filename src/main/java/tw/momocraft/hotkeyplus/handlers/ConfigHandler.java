@@ -77,7 +77,7 @@ public class ConfigHandler {
         File filePath = HotkeyPlus.getInstance().getDataFolder();
         switch (fileName) {
             case "config.yml":
-                configVersion = 1;
+                configVersion = 2;
                 break;
         }
         getConfigData(filePath, fileName);

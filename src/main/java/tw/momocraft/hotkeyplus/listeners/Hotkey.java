@@ -55,7 +55,7 @@ public class Hotkey implements Listener {
                 return;
             }
             addCD(player);
-            CustomCommands.executeMultiCmdsList(player, keyboardMap.getCommands());
+            CustomCommands.executeMultiCmdsList(player, keyboardMap.getCommands(), true);
             e.setCancelled(keyboardMap.isCancel());
             ServerHandler.sendFeatureMessage("Hotkey", playerName, "final", "return", "Keyboard",
                     new Throwable().getStackTrace()[0]);
@@ -104,7 +104,7 @@ public class Hotkey implements Listener {
                 return;
             }
             addCD(player);
-            CustomCommands.executeMultiCmdsList(player, keyboardMap.getCommands());
+            CustomCommands.executeMultiCmdsList(player, keyboardMap.getCommands(), true);
             e.setCancelled(keyboardMap.isCancel());
             ServerHandler.sendFeatureMessage("Hotkey", playerName, "final", "return", "Keyboard",
                     new Throwable().getStackTrace()[0]);

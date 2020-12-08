@@ -14,19 +14,13 @@ public class ConfigPath {
     //         General Settings                        //
     //  ============================================== //
     private Map<String, String> customCmdProp;
-
-    private boolean logDefaultNew;
-    private boolean logDefaultZip;
-    private boolean logCustomNew;
-    private boolean logCustomZip;
-    private String logCustomPath;
-    private String logCustomName;
+    private final Map<String, SoundMap> soundProp = new HashMap<>();
+    private final Map<String, ParticleMap> particleProp = new HashMap<>();
 
     //  ============================================== //
     //         Hotkey Settings                         //
     //  ============================================== //
     private boolean hotkey;
-    private boolean hotkeyMenu;
     private boolean hotkeyKeyboard;
     private boolean hotkeyCooldown;
     private int hotkeyCooldownInt;
@@ -53,6 +47,31 @@ public class ConfigPath {
                 customCmdProp.put(group, ConfigHandler.getConfig("config.yml").getString("General.Custom-Commands." + group));
             }
         }
+        ConfigurationSection particleConfig = ConfigHandler.getConfig("config.yml").getConfigurationSection("General.Particles");
+        if (particleConfig != null) {
+            ParticleMap particleMap;
+            for (String group : particleConfig.getKeys(false)) {
+                particleMap = new ParticleMap();
+                particleMap.setType(ConfigHandler.getConfig("config.yml").getString("General.Particles." + group + ".Type"));
+                particleMap.setAmount(ConfigHandler.getConfig("config.yml").getInt("General.Particles." + group + ".Amount", 1));
+                particleMap.setTimes(ConfigHandler.getConfig("config.yml").getInt("General.Particles." + group + ".Times", 1));
+                particleMap.setInterval(ConfigHandler.getConfig("config.yml").getInt("General.Particles." + group + ".Interval", 20));
+                particleProp.put(group, particleMap);
+            }
+        }
+        ConfigurationSection soundConfig = ConfigHandler.getConfig("config.yml").getConfigurationSection("General.Sounds");
+        if (soundConfig != null) {
+            SoundMap soundMap;
+            for (String group : soundConfig.getKeys(false)) {
+                soundMap = new SoundMap();
+                soundMap.setType(ConfigHandler.getConfig("config.yml").getString("General.Sounds." + group + ".Type"));
+                soundMap.setVolume(ConfigHandler.getConfig("config.yml").getInt("General.Sounds." + group + ".Volume", 1));
+                soundMap.setPitch(ConfigHandler.getConfig("config.yml").getInt("General.Sounds." + group + ".Pitch", 1));
+                soundMap.setTimes(ConfigHandler.getConfig("config.yml").getInt("General.Sounds." + group + ".Loop.Times", 1));
+                soundMap.setInterval(ConfigHandler.getConfig("config.yml").getInt("General.Sounds." + group + ".Loop.Interval", 20));
+                soundProp.put(group, soundMap);
+            }
+        }
     }
 
     //  ============================================== //
@@ -61,7 +80,6 @@ public class ConfigPath {
     private void setHotKey() {
         hotkey = ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Enable");
         if (hotkey) {
-            hotkeyMenu = ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Menu.Enable");
             hotkeyKeyboard = ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Keyboard.Enable");
         }
         hotkeyCooldown = ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Keyboard.Settings.Cooldown.Enable");
@@ -90,29 +108,11 @@ public class ConfigPath {
     public Map<String, String> getCustomCmdProp() {
         return customCmdProp;
     }
-
-    public boolean isLogDefaultNew() {
-        return logDefaultNew;
+    public Map<String, ParticleMap> getParticleProp() {
+        return particleProp;
     }
-
-    public boolean isLogDefaultZip() {
-        return logDefaultZip;
-    }
-
-    public boolean isLogCustomNew() {
-        return logCustomNew;
-    }
-
-    public boolean isLogCustomZip() {
-        return logCustomZip;
-    }
-
-    public String getLogCustomName() {
-        return logCustomName;
-    }
-
-    public String getLogCustomPath() {
-        return logCustomPath;
+    public Map<String, SoundMap> getSoundProp() {
+        return soundProp;
     }
 
     //  ============================================== //
@@ -120,10 +120,6 @@ public class ConfigPath {
     //  ============================================== //
     public boolean isHotkey() {
         return hotkey;
-    }
-
-    public boolean isHotkeyMenu() {
-        return hotkeyMenu;
     }
 
     public boolean isHotkeyKeyboard() {

@@ -2,7 +2,7 @@
 #  Spigot: https://www.spigotmc.org/resources/HotkeyPlus.85995/
 #  Wiki: https://github.com/momoservertw/HotkeyPlus/wiki
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-Config-Version: 1
+Config-Version: 2
 Check-Updates: true
 Debugging: false
 
@@ -14,6 +14,31 @@ General:
         Vault: true
         PlayerPoints: true
         PlaceHolderAPI: true
+  # The settings for custom sounds.
+  # More information: https://github.com/momoservertw/HotkeyPlus/wiki/Custom-Sounds
+  Sounds:
+    Succeed:
+      Type: ENTITY_PLAYER_LEVELUP
+    Failed:
+      Type: ENTITY_SHULKER_HURT
+    SlimeJump:
+      Type: ENTITY_SLIME_JUMP
+      Loop:
+        Times: 8
+        Interval: 20
+  # The settings for custom particles.
+  # More information: https://github.com/momoservertw/HotkeyPlus/wiki/Custom-Particles
+  Particles:
+    Slime:
+      Type: SLIME
+      Amount: 3
+      Times: 8
+      Interval: 20
+    Flame:
+      Type: FLAME
+      Amount: 3
+      Times: 8
+      Interval: 20
   # The settings for custom commands.
   # More information: https://github.com/momoservertw/HotkeyPlus/wiki/Custom-Command
   Custom-Commands:
@@ -29,11 +54,11 @@ General:
           Path: "plugin//CustomLogs"
           Name: "latest"
     # To send frequently used commands with placeholders.
-  Groups:
-    reward: "message: &6&lReward&c✤ &f%cmd_arg1%"
-    awards: "message: &d✧ &f%cmd_arg1% &d✧"
-    cgl: "broadcast: &6Congratulate &e%player% &6use &f%cmd_arg1% &8- &6Get the %cmd_arg2% &7<&f%cmd_arg3%&7>"
-    money: "console: money give %player% %cmd_arg1%"
+    Groups:
+      reward: "message: &6&lReward&c✤ &f%cmd_arg1%"
+      awards: "message: &d✧ &f%cmd_arg1% &d✧"
+      cgl: "broadcast: &6Congratulate &e%player% &6use &f%cmd_arg1% &8- &6Get the %cmd_arg2% &7<&f%cmd_arg3%&7>"
+      money: "console: money give %player% %cmd_arg1%"
 
 # To add cool hotkeys in your server.
 # More information: https://github.com/momoservertw/HotkeyPlus/wiki/Hotkey
@@ -112,11 +137,13 @@ Message:
   prefix: "&f[&eHotkeyPlus&f] &r"
   noPermission: '&cYou do not have permission to use that command!'
   configReload: '&aConfiguration(s) Reloaded!'
-  unknownCommand: '&cUnknown command, See &e/HotkeyPlus help &cfor a list of commands.'
+  unknownCommand: '&cUnknown command, See &e/hotkeyplus help &cfor a list of commands.'
   cooldown: '&fPlease try it again later.'
+  featureDisabled: "&cThe feature is disabled."
+  onlyPlayer: "&cThis command can only executing from player."
   HotkeyPlus:
     Commands:
-      title: "&8▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ &d&lHotkeyPlus &8▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩"
-      help: "&a/hotkeyplus help &8- &7This help menu."
-      reload: "&a/hotkeyplus reload &8- &7Reloads config file."
+      title: "&8▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩ &dHotkeyPlus &8▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩▩"
+      help: "&f/hotkeyplus help &8- &7This help menu."
+      reload: "&f/hotkeyplus reload &8- &7Reloads config file."
       version: "&f/hotkeyplus version &8- &7Checks the plugin version and updates."

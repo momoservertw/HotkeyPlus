@@ -3,66 +3,65 @@ package tw.momocraft.hotkeyplus;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
+import tw.momocraft.coreplus.api.CorePlusAPI;
 import tw.momocraft.hotkeyplus.handlers.ConfigHandler;
-import tw.momocraft.hotkeyplus.handlers.PermissionsHandler;
-import tw.momocraft.hotkeyplus.handlers.ServerHandler;
-import tw.momocraft.hotkeyplus.utils.Language;
 
 
 public class Commands implements CommandExecutor {
 
     public boolean onCommand(final CommandSender sender, Command c, String l, String[] args) {
-        if (args.length == 0) {
-            if (PermissionsHandler.hasPermission(sender, "hotkeyplus.use")) {
-                Language.dispatchMessage(sender, "");
-                Language.sendLangMessage("Message.HotkeyPlus.Commands.title", sender, false);
-                if (PermissionsHandler.hasPermission(sender, "HotkeyPlus.command.version")) {
-                    Language.dispatchMessage(sender, "&d&lHotkeyPlus &e&lv" + HotkeyPlus.getInstance().getDescription().getVersion() + "&8 - &fby Momocraft");
+        switch (args.length) {
+            case 0:
+                if (CorePlusAPI.getPermManager().hasPermission(sender, "hotkeyplus.use")) {
+                    CorePlusAPI.getLangManager().sendMsg(ConfigHandler.getPrefix(), sender, "");
+                    CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), ConfigHandler.getConfigPath().getMsgTitle(), sender);
+                    CorePlusAPI.getLangManager().sendMsg(ConfigHandler.getPrefix(), sender, "&f " + HotkeyPlus.getInstance().getDescription().getName()
+                            + " &ev" + HotkeyPlus.getInstance().getDescription().getVersion() + "  &8by Momocraft");
+                    CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), ConfigHandler.getConfigPath().getMsgHelp(), sender);
+                    CorePlusAPI.getLangManager().sendMsg(ConfigHandler.getPrefix(), sender, "");
+                } else {
+                    CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), "Message.noPermission", sender);
                 }
-                Language.sendLangMessage("Message.HotkeyPlus.Commands.help", sender, false);
-                Language.dispatchMessage(sender, "");
-            } else {
-                Language.sendLangMessage("Message.noPermission", sender);
-            }
-            return true;
-        } else if (args.length == 1 && args[0].equalsIgnoreCase("help")) {
-            if (PermissionsHandler.hasPermission(sender, "hotkeyplus.use")) {
-                Language.dispatchMessage(sender, "");
-                Language.sendLangMessage("Message.HotkeyPlus.Commands.title", sender, false);
-                if (PermissionsHandler.hasPermission(sender, "HotkeyPlus.command.version")) {
-                    Language.dispatchMessage(sender, "&d&lHotkeyPlus &e&lv" + HotkeyPlus.getInstance().getDescription().getVersion() + "&8 - &fby Momocraft");
+                return true;
+            case 1:
+                if (args[0].equalsIgnoreCase("help")) {
+                    if (CorePlusAPI.getPermManager().hasPermission(sender, "hotkeyplus.use")) {
+                        CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), ConfigHandler.getConfigPath().getMsgTitle(), sender);
+                        CorePlusAPI.getLangManager().sendMsg(ConfigHandler.getPrefix(), sender, "&f " + HotkeyPlus.getInstance().getDescription().getName()
+                                + " &ev" + HotkeyPlus.getInstance().getDescription().getVersion() + "  &8by Momocraft");
+                        CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), ConfigHandler.getConfigPath().getMsgHelp(), sender);
+                        if (CorePlusAPI.getPermManager().hasPermission(sender, "hotkeyplus.command.reload")) {
+                            CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), ConfigHandler.getConfigPath().getMsgReload(), sender);
+                        }
+                        if (CorePlusAPI.getPermManager().hasPermission(sender, "hotkeyplus.command.version")) {
+                            CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), ConfigHandler.getConfigPath().getMsgVersion(), sender);
+                        }
+                        CorePlusAPI.getLangManager().sendMsg(ConfigHandler.getPrefix(), sender, "");
+                    } else {
+                        CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), "Message.noPermission", sender);
+                    }
+                    return true;
+                } else if (args[0].equalsIgnoreCase("reload")) {
+                    if (CorePlusAPI.getPermManager().hasPermission(sender, "hotkeyplus.command.reload")) {
+                        ConfigHandler.generateData(true);
+                        CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), "Message.configReload", sender);
+                    } else {
+                        CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), "Message.noPermission", sender);
+                    }
+                    return true;
+                } else if (args[0].equalsIgnoreCase("version")) {
+                    if (CorePlusAPI.getPermManager().hasPermission(sender, "hotkeyplus.command.version")) {
+                        CorePlusAPI.getLangManager().sendMsg(ConfigHandler.getPrefix(), sender, "&f " + HotkeyPlus.getInstance().getDescription().getName()
+                                + " &ev" + HotkeyPlus.getInstance().getDescription().getVersion() + "  &8by Momocraft");
+                        CorePlusAPI.getUpdateManager().check(ConfigHandler.getPrefix(), sender, HotkeyPlus.getInstance().getName(), HotkeyPlus.getInstance().getDescription().getVersion());
+                    } else {
+                        CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), "Message.noPermission", sender);
+                    }
+                    return true;
                 }
-                Language.sendLangMessage("Message.HotkeyPlus.Commands.help", sender, false);
-                if (PermissionsHandler.hasPermission(sender, "HotkeyPlus.command.reload")) {
-                    Language.sendLangMessage("Message.HotkeyPlus.Commands.reload", sender, false);
-                }
-                Language.dispatchMessage(sender, "");
-            } else {
-                Language.sendLangMessage("Message.noPermission", sender);
-            }
-            return true;
-        } else if (args.length == 1 && args[0].equalsIgnoreCase("reload")) {
-            if (PermissionsHandler.hasPermission(sender, "hotkeyplus.command.reload")) {
-                // working: close purge.Auto-Clean schedule
-                ConfigHandler.generateData(true);
-                Language.sendLangMessage("Message.configReload", sender);
-            } else {
-                Language.sendLangMessage("Message.noPermission", sender);
-            }
-            return true;
-        } else if (args.length == 1 && args[0].equalsIgnoreCase("version")) {
-            if (PermissionsHandler.hasPermission(sender, "hotkeyplus.command.version")) {
-                Language.dispatchMessage(sender, "&d&lHotkeyPlus &e&lv" + HotkeyPlus.getInstance().getDescription().getVersion() + "&8 - &fby Momocraft");
-                ConfigHandler.getUpdater().checkUpdates(sender);
-            } else {
-                Language.sendLangMessage("Message.noPermission", sender);
-            }
-            return true;
-        } else {
-            Language.sendLangMessage("Message.unknownCommand", sender);
-            return true;
+            default:
+                CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), "Message.unknownCommand", sender);
+                return true;
         }
     }
 }

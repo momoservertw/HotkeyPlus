@@ -6,9 +6,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import tw.momocraft.coreplus.api.CorePlusAPI;
 import tw.momocraft.hotkeyplus.handlers.ConfigHandler;
-import tw.momocraft.hotkeyplus.handlers.PermissionsHandler;
-import tw.momocraft.hotkeyplus.handlers.ServerHandler;
 import tw.momocraft.hotkeyplus.utils.*;
 
 import java.util.HashMap;
@@ -32,8 +31,8 @@ public class Hotkey implements Listener {
         String playerName = player.getName();
         KeyboardMap keyboardMap = ConfigHandler.getConfigPath().getHotkeyKeyboardProp().get(-1);
         if (keyboardMap != null) {
-            if (!PermissionsHandler.hasPermission(player, "hotkeyplus.hotkey.keyboard.*") &&
-                    !PermissionsHandler.hasPermission(player, "hotkeyplus.hotkey.keyboard." + keyboardMap.getGroupName())) {
+            if (!CorePlusAPI.getPermManager().hasPermission(player, "hotkeyplus.hotkey.keyboard.*") &&
+                    !CorePlusAPI.getPermManager().hasPermission(player, "hotkeyplus.hotkey.keyboard." + keyboardMap.getGroupName())) {
                 return;
             }
             String onCD = onCD(player);
@@ -44,10 +43,10 @@ public class Hotkey implements Listener {
                 }
                 addCDDuplicate(player);
                 if (ConfigHandler.getConfigPath().isHotkeyCooldownMsg()) {
-                    Language.sendLangMessage("Message.cooldown", player);
+                    CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), "Message.cooldown", player);
                 }
                 e.setCancelled(keyboardMap.isCancel());
-                ServerHandler.sendFeatureMessage("Hotkey", playerName, "cooldown", "return", "Keyboard",
+                CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPrefix(), "Hotkey", playerName, "cooldown", "return", "Keyboard",
                         new Throwable().getStackTrace()[0]);
                 return;
             } else if (onCD.equals("")) {
@@ -55,9 +54,9 @@ public class Hotkey implements Listener {
                 return;
             }
             addCD(player);
-            CustomCommands.executeMultiCmdsList(player, keyboardMap.getCommands(), true);
+            CorePlusAPI.getCommandManager().executeMultiCmdsList(ConfigHandler.getPrefix(), player, keyboardMap.getCommands(), true);
             e.setCancelled(keyboardMap.isCancel());
-            ServerHandler.sendFeatureMessage("Hotkey", playerName, "final", "return", "Keyboard",
+            CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPrefix(), "Hotkey", playerName, "final", "return", "Keyboard",
                     new Throwable().getStackTrace()[0]);
         }
     }
@@ -81,32 +80,34 @@ public class Hotkey implements Listener {
         }
         KeyboardMap keyboardMap = ConfigHandler.getConfigPath().getHotkeyKeyboardProp().get(newSlot);
         if (keyboardMap != null) {
-            if (!PermissionsHandler.hasPermission(player, "hotkeyplus.hotkey.keyboard.*") &&
-                    !PermissionsHandler.hasPermission(player, "hotkeyplus.hotkey.keyboard." + keyboardMap.getGroupName())) {
+            if (!CorePlusAPI.getPermManager().hasPermission(player, "hotkeyplus.hotkey.keyboard.*") &&
+                    !CorePlusAPI.getPermManager().hasPermission(player, "hotkeyplus.hotkey.keyboard." + keyboardMap.getGroupName())) {
                 return;
             }
-            String onCD = onCD(player);
-            if (onCD.equals("true")) {
-                if (onCDDuplicate(player)) {
+            if (ConfigHandler.getConfigPath().isHotkeyCooldown()) {
+                String onCD = onCD(player);
+                if (onCD.equals("true")) {
+                    if (onCDDuplicate(player)) {
+                        e.setCancelled(keyboardMap.isCancel());
+                        return;
+                    }
+                    addCDDuplicate(player);
+                    if (ConfigHandler.getConfigPath().isHotkeyCooldownMsg()) {
+                        CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), "Message.cooldown", player);
+                    }
+                    e.setCancelled(keyboardMap.isCancel());
+                    CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPrefix(), "Hotkey", playerName, "cooldown", "return", "Keyboard",
+                            new Throwable().getStackTrace()[0]);
+                    return;
+                } else if (onCD.equals("")) {
                     e.setCancelled(keyboardMap.isCancel());
                     return;
                 }
-                addCDDuplicate(player);
-                if (ConfigHandler.getConfigPath().isHotkeyCooldownMsg()) {
-                    Language.sendLangMessage("Message.cooldown", player);
-                }
-                e.setCancelled(keyboardMap.isCancel());
-                ServerHandler.sendFeatureMessage("Hotkey", playerName, "cooldown", "return", "Keyboard",
-                        new Throwable().getStackTrace()[0]);
-                return;
-            } else if (onCD.equals("")) {
-                e.setCancelled(keyboardMap.isCancel());
-                return;
+                addCD(player);
             }
-            addCD(player);
-            CustomCommands.executeMultiCmdsList(player, keyboardMap.getCommands(), true);
+            CorePlusAPI.getCommandManager().executeMultiCmdsList(ConfigHandler.getPrefix(), player, keyboardMap.getCommands(), true);
             e.setCancelled(keyboardMap.isCancel());
-            ServerHandler.sendFeatureMessage("Hotkey", playerName, "final", "return", "Keyboard",
+            CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPrefix(), "Hotkey", playerName, "final", "return", "Keyboard",
                     new Throwable().getStackTrace()[0]);
         }
     }

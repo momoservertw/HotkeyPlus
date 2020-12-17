@@ -31,16 +31,6 @@
             <id>spigot-repo</id>
             <url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
         </repository>
-        <!--PlaceholderAPI Repo-->
-        <repository>
-            <id>placeholderapi</id>
-            <url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-        </repository>
-        <!--CraftationGaming Repository-->
-        <repository>
-            <id>CraftationGaming</id>
-            <url>https://raw.githubusercontent.com/RockinChaos/repository/maven-public/</url>
-        </repository>
     </repositories>
     <dependencies>
         <!--Google API-->
@@ -63,27 +53,12 @@
             <version>LATEST</version>
             <scope>provided</scope>
         </dependency>
-        <!--PlaceholderAPI API-->
+        <!--CorePlus API-->
         <dependency>
-            <groupId>me.clip</groupId>
-            <artifactId>placeholderapi</artifactId>
-            <version>LATEST</version>
-            <scope>provided</scope>
-        </dependency>
-        <!--Vault API-->
-        <dependency>
-            <groupId>net.milkbowl.vault</groupId>
-            <artifactId>Vault</artifactId>
+            <groupId>momocraft.tw</groupId>
+            <artifactId>CorePlus</artifactId>
             <scope>system</scope>
-            <systemPath>${pom.basedir}/src/main/java/tw/momocraft/hotkeyplus/extra/VaultAPI.jar</systemPath>
-            <version>LATEST</version>
-        </dependency>
-        <!--PlayerPoints API-->
-        <dependency>
-            <groupId>org.black_ixx</groupId>
-            <artifactId>PlayerPoints</artifactId>
-            <scope>system</scope>
-            <systemPath>${pom.basedir}/src/main/java/tw/momocraft/hotkeyplus/extra/PlayerPoints.jar</systemPath>
+            <systemPath>${pom.basedir}/src/main/java/tw/momocraft/hotkeyplus/extra/CorePlus-1.0.0.jar</systemPath>
             <version>LEGACY</version>
         </dependency>
     </dependencies>

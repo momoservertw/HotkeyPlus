@@ -1,9 +1,10 @@
 package tw.momocraft.hotkeyplus.handlers;
 
+import tw.momocraft.coreplus.api.CorePlusAPI;
 import tw.momocraft.hotkeyplus.Commands;
 import tw.momocraft.hotkeyplus.HotkeyPlus;
 import tw.momocraft.hotkeyplus.listeners.*;
-import tw.momocraft.hotkeyplus.utils.TabComplete;
+import tw.momocraft.hotkeyplus.TabComplete;
 
 public class RegisterHandler {
 
@@ -12,7 +13,7 @@ public class RegisterHandler {
         HotkeyPlus.getInstance().getCommand("HotkeyPlus").setTabCompleter(new TabComplete());
 
         HotkeyPlus.getInstance().getServer().getPluginManager().registerEvents(new Hotkey(), HotkeyPlus.getInstance());
-        ServerHandler.sendFeatureMessage("Register-Event", "Hotkey", "Hotkey", "continue",
+        CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPrefix(), "Register-Event", "Hotkey", "Hotkey", "continue",
                 new Throwable().getStackTrace()[0]);
     }
 }

@@ -4,7 +4,7 @@ author: Momocraft
 api-version: 1.13
 version: 1.0.1
 description: To add cool hotkeys in your server.
-softdepend: [ Vault, PlayerPoints, PlaceHolderAPI ]
+depend: [ CorePlus ]
 
 commands:
   hotkeyplus:
@@ -21,6 +21,7 @@ permissions:
     children:
       hotkeyplus.use: true
       hotkeyplus.command.*: true
+      hotkeyplus.hotkey.keyboard.*: true
   hotkeyplus.use:
     description: Allows use of basic commands.
     default: true

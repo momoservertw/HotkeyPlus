@@ -1,10 +1,10 @@
-package tw.momocraft.hotkeyplus.utils;
+package tw.momocraft.hotkeyplus;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.util.StringUtil;
-import tw.momocraft.hotkeyplus.handlers.PermissionsHandler;
+import tw.momocraft.coreplus.api.CorePlusAPI;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -18,13 +18,13 @@ public class TabComplete implements TabCompleter {
         final List<String> commands = new ArrayList<>();
         switch (args.length) {
             case 1:
-                if (PermissionsHandler.hasPermission(sender, "barrierplus.use")) {
+                if (CorePlusAPI.getPermManager().hasPermission(sender, "barrierplus.use")) {
                     commands.add("help");
                 }
-                if (PermissionsHandler.hasPermission(sender, "barrierplus.command.reload")) {
+                if (CorePlusAPI.getPermManager().hasPermission(sender, "barrierplus.command.reload")) {
                     commands.add("reload");
                 }
-                if (PermissionsHandler.hasPermission(sender, "barrierplus.command.version")) {
+                if (CorePlusAPI.getPermManager().hasPermission(sender, "barrierplus.command.version")) {
                     commands.add("version");
                 }
                 break;

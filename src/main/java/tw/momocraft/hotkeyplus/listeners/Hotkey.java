@@ -46,7 +46,7 @@ public class Hotkey implements Listener {
                     CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), "Message.cooldown", player);
                 }
                 e.setCancelled(keyboardMap.isCancel());
-                CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPrefix(), "Hotkey", playerName, "cooldown", "return", "Keyboard",
+                CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPrefix(), "Hotkey", playerName, "cooldown", "return", "Keyboard f",
                         new Throwable().getStackTrace()[0]);
                 return;
             } else if (onCD.equals("")) {
@@ -54,7 +54,7 @@ public class Hotkey implements Listener {
                 return;
             }
             addCD(player);
-            CorePlusAPI.getCommandManager().executeMultiCmdsList(ConfigHandler.getPrefix(), player, keyboardMap.getCommands(), true);
+            CorePlusAPI.getCommandManager().executeCmdList(ConfigHandler.getPrefix(), player, keyboardMap.getCommands(), true);
             e.setCancelled(keyboardMap.isCancel());
             CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPrefix(), "Hotkey", playerName, "final", "return", "Keyboard",
                     new Throwable().getStackTrace()[0]);
@@ -96,7 +96,7 @@ public class Hotkey implements Listener {
                         CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), "Message.cooldown", player);
                     }
                     e.setCancelled(keyboardMap.isCancel());
-                    CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPrefix(), "Hotkey", playerName, "cooldown", "return", "Keyboard",
+                    CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPrefix(), "Hotkey", playerName, "cooldown", "return", "Keyboard " + newSlot,
                             new Throwable().getStackTrace()[0]);
                     return;
                 } else if (onCD.equals("")) {
@@ -105,7 +105,7 @@ public class Hotkey implements Listener {
                 }
                 addCD(player);
             }
-            CorePlusAPI.getCommandManager().executeMultiCmdsList(ConfigHandler.getPrefix(), player, keyboardMap.getCommands(), true);
+            CorePlusAPI.getCommandManager().executeCmdList(ConfigHandler.getPrefix(), player, keyboardMap.getCommands(), true);
             e.setCancelled(keyboardMap.isCancel());
             CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPrefix(), "Hotkey", playerName, "final", "return", "Keyboard",
                     new Throwable().getStackTrace()[0]);

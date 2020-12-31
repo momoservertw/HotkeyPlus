@@ -2,7 +2,7 @@ name: HotkeyPlus
 main: tw.momocraft.hotkeyplus.HotkeyPlus
 author: Momocraft
 api-version: 1.13
-version: 1.0.1
+version: 1.0.0
 description: To add cool hotkeys in your server.
 depend: [ CorePlus ]
 
@@ -21,7 +21,7 @@ permissions:
     children:
       hotkeyplus.use: true
       hotkeyplus.command.*: true
-      hotkeyplus.hotkey.keyboard.*: true
+      hotkeyplus.hotkey.*: true
   hotkeyplus.use:
     description: Allows use of basic commands.
     default: true
@@ -37,6 +37,11 @@ permissions:
   hotkeyplus.command.version:
     description: Allows use of command /hotkeyplus version.
     default: op
+  hotkeyplus.hotkey.*:
+    description: Allows use all keyboard hotkey.
+    default: op
+    children:
+      hotkeyplus.hotkey.keyboard.*: true
   hotkeyplus.hotkey.keyboard.*:
     description: Allows use all keyboard hotkey.
     default: op

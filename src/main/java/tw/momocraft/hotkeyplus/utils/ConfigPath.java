@@ -1,6 +1,7 @@
 package tw.momocraft.hotkeyplus.utils;
 
 import org.bukkit.configuration.ConfigurationSection;
+import tw.momocraft.coreplus.api.CorePlusAPI;
 import tw.momocraft.hotkeyplus.handlers.ConfigHandler;
 
 import java.util.*;
@@ -73,6 +74,8 @@ public class ConfigPath {
             keyboardMap.setCancel(ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Keyboard.Groups." + group + ".Cancel"));
             keyboardMap.setCommands(ConfigHandler.getConfig("config.yml").getStringList("HotKey.Keyboard.Groups." + group + ".Commands"));
             hotkeyKeyboardProp.put(ConfigHandler.getConfig("config.yml").getInt("HotKey.Keyboard.Groups." + group + ".Slot"), keyboardMap);
+            CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPlugin(), "HotKey", "Keyboard", "setup", "continue", group,
+                    new Throwable().getStackTrace()[0]);
         }
     }
 

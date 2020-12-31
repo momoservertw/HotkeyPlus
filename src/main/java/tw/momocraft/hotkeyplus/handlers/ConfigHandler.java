@@ -3,6 +3,7 @@ package tw.momocraft.hotkeyplus.handlers;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import tw.momocraft.coreplus.CorePlus;
 import tw.momocraft.coreplus.api.CorePlusAPI;
 import tw.momocraft.hotkeyplus.HotkeyPlus;
 import tw.momocraft.hotkeyplus.utils.*;
@@ -22,7 +23,7 @@ public class ConfigHandler {
         if (!reload) {
             CorePlusAPI.getUpdateManager().check(getPrefix(), Bukkit.getConsoleSender(),
                     HotkeyPlus.getInstance().getDescription().getName(),
-                    HotkeyPlus.getInstance().getDescription().getVersion());
+                    HotkeyPlus.getInstance().getDescription().getVersion(), true);
         }
     }
 
@@ -105,13 +106,12 @@ public class ConfigHandler {
         return configPath;
     }
 
-
     public static String getPrefix() {
         return getConfig("config.yml").getString("Message.prefix");
     }
 
-    public static boolean isDebugging() {
-        return ConfigHandler.getConfig("config.yml").getBoolean("Debugging");
+    public static String getPlugin() {
+        return "[" + HotkeyPlus.getInstance().getDescription().getName() + "] ";
     }
 
 }

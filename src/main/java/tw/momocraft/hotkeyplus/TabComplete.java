@@ -18,13 +18,13 @@ public class TabComplete implements TabCompleter {
         final List<String> commands = new ArrayList<>();
         switch (args.length) {
             case 1:
-                if (CorePlusAPI.getPermManager().hasPermission(sender, "barrierplus.use")) {
+                if (CorePlusAPI.getPlayerManager().hasPermission(sender, "barrierplus.use")) {
                     commands.add("help");
                 }
-                if (CorePlusAPI.getPermManager().hasPermission(sender, "barrierplus.command.reload")) {
+                if (CorePlusAPI.getPlayerManager().hasPermission(sender, "barrierplus.command.reload")) {
                     commands.add("reload");
                 }
-                if (CorePlusAPI.getPermManager().hasPermission(sender, "barrierplus.command.version")) {
+                if (CorePlusAPI.getPlayerManager().hasPermission(sender, "barrierplus.command.version")) {
                     commands.add("version");
                 }
                 break;

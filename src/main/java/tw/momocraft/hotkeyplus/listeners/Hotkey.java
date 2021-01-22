@@ -1,151 +1,245 @@
 package tw.momocraft.hotkeyplus.listeners;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+import javafx.util.Pair;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
+import sun.security.krb5.Config;
 import tw.momocraft.coreplus.api.CorePlusAPI;
 import tw.momocraft.hotkeyplus.handlers.ConfigHandler;
 import tw.momocraft.hotkeyplus.utils.*;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.util.*;
 
 public class Hotkey implements Listener {
+    // Map< playerName, List<KeyboardMap>>
+    private final Map<String, Table<Integer, String, KeyboardMap>> customKeyMap = new HashMap<>();
+    private final Map<String, Integer> triggerMap = new HashMap<>();
+    private final Map<String, Long> trigMap = new HashMap<>();
 
-    private final Map<String, Long> cdMap = new HashMap<>();
+    private final Map<String, Long> cooldownMap = new HashMap<>();
 
-    private final Map<String, Long> cdDuplicateMap = new HashMap<>();
+
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerJoinEvent(PlayerJoinEvent e) {
+        if (!ConfigHandler.getConfigPath().isDoubleShiftCustom()) {
+            return;
+        }
+        if (!CorePlusAPI.getMySQLManager().isConnect(ConfigHandler.getPluginName())) {
+            return;
+        }
+        String playerName = e.getPlayer().getName();
+        ResultSet resultSet;
+        try {
+            resultSet = CorePlusAPI.getMySQLManager().getResultSet(ConfigHandler.getPlugin(), ConfigHandler.getPluginName(),
+                    "SELECT page, key, commands FROM playerdata where player_name = '" + playerName + " ORDER BY key DESC'");
+            Table<Integer, String, KeyboardMap> table = HashBasedTable.create();
+            int page;
+            String key;
+            String commands;
+            KeyboardMap keyboardMap;
+            while (resultSet.next()) {
+                keyboardMap = new KeyboardMap();
+                page = resultSet.getInt("page");
+                key = resultSet.getString("key");
+                commands = resultSet.getString("commands");
+                keyboardMap.setGroup(page + "-" + key);
+                keyboardMap.setKey(key);
+                keyboardMap.setPage(page);
+                keyboardMap.setCommands(Arrays.asList(commands.split(", ")));
+                table.put(page, key, keyboardMap);
+            }
+            customKeyMap.put(playerName, table);
+        } catch (Exception ex) {
+        }
+    }
+
+    /*
+    Main: "%message%&8|| &fClose: Shift &8|| &f◀ ▶ Change Page"
+          Separate: " &8|&r "
+          Key: "&a%key%: &e"
+     */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void onPlayerToggleSneakEvent(PlayerToggleSneakEvent e) {
+        if (e.isSneaking() || e.isCancelled()) {
+            return;
+        }
+        Player player = e.getPlayer();
+        if (!isTrigger(player)) {
+            return;
+        }
+        addTrigger(player);
+        Table<Integer, String, KeyboardMap> table = customKeyMap.get(player.getName());
+        String messageFormat = ConfigHandler.getConfigPath().getDoubleShiftMenuMain();
+        String displayList = "";
+        String separateFormat = ConfigHandler.getConfigPath().getDoubleShiftMenuSeparate();
+        String keyFormat = ConfigHandler.getConfigPath().getDoubleShiftMenuKey();
+        for (KeyboardMap keyboardMap : table.values()) {
+            displayList = displayList + keyFormat.replace("%key%", keyboardMap.getKey()) + keyboardMap.getDisplay() + separateFormat;
+        }
+        messageFormat = messageFormat.replace("%message%", displayList);
+
+    }
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerSwapHandItems(PlayerSwapHandItemsEvent e) {
-        if (!ConfigHandler.getConfigPath().isHotkeyKeyboard()) {
-            return;
-        }
         Player player = e.getPlayer();
-        if (!player.isSneaking()) {
+        if (!player.isSneaking() || e.isCancelled()) {
             return;
         }
         String playerName = player.getName();
-        KeyboardMap keyboardMap = ConfigHandler.getConfigPath().getHotkeyKeyboardProp().get(-1);
-        if (keyboardMap == null) {
-            return;
-        }
-        if (!CorePlusAPI.getPlayerManager().hasPermission(player, "hotkeyplus.hotkey.keyboard.*") &&
-                !CorePlusAPI.getPlayerManager().hasPermission(player, "hotkeyplus.hotkey.keyboard." + keyboardMap.getGroupName())) {
-            return;
-        }
-        String onCD = onCD(player);
-        if (onCD.equals("true")) {
-            if (onCDDuplicate(player)) {
-                e.setCancelled(keyboardMap.isCancel());
+        if (triggerMap.containsKey(playerName)) {
+            String key = "f";
+            KeyboardMap keyboardMap;
+            try {
+                int page = triggerMap.get(playerName);
+                keyboardMap = customKeyMap.get(playerName).get(page, key);
+            } catch (Exception ex) {
+                keyboardMap = ConfigHandler.getConfigPath().getDoubleShiftProp().get(key);
+            }
+            if (keyboardMap == null) {
                 return;
             }
-            addCDDuplicate(player);
-            if (ConfigHandler.getConfigPath().isHotkeyCooldownMsg()) {
-                CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), "Message.cooldown", player);
+            // Duplicate Event
+            if (onDuplicate(player)) {
+                return;
             }
-            e.setCancelled(keyboardMap.isCancel());
-            CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPlugin(), "Hotkey", playerName, "cooldown", "return", "Keyboard f",
-                    new Throwable().getStackTrace()[0]);
-            return;
-        } else if (onCD.equals("")) {
-            e.setCancelled(keyboardMap.isCancel());
+            // Permission
+            if (!CorePlusAPI.getPlayerManager().hasPerm(ConfigHandler.getPluginName(), player, "hotkeyplus.hotkey.doubleshift.*") &&
+                    !CorePlusAPI.getPlayerManager().hasPerm(ConfigHandler.getPluginName(), player, "hotkeyplus.hotkey.keyboard." + keyboardMap.getGroup())) {
+                return;
+            }
+            // Execute
+            e.setCancelled(true);
+            triggerMap.remove(playerName);
+            if (!executeHotkey(player, keyboardMap.getCommands(), !keyboardMap.isCustom())) {
+                CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.isDebugging(), ConfigHandler.getPlugin(),
+                        "Double-Shift", player.getName(), "cooldown", "fail", keyboardMap.getGroup(), new Throwable().getStackTrace()[0]);
+                return;
+            }
+            CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.isDebugging(), ConfigHandler.getPlugin(),
+                    "Hotkey", playerName, "final", "sucess", keyboardMap.getGroup(), new Throwable().getStackTrace()[0]);
             return;
         }
-        addCD(player);
-        CorePlusAPI.getCommandManager().executeCmdList(ConfigHandler.getPrefix(), player, keyboardMap.getCommands(), true);
-        e.setCancelled(keyboardMap.isCancel());
-        CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPlugin(), "Hotkey", playerName, "final", "return", "Keyboard",
-                new Throwable().getStackTrace()[0]);
+        if (!ConfigHandler.getConfigPath().isShiftF()) {
+            return;
+        }
+        KeyboardMap keyboardMap;
+        try {
+            int page = triggerMap.get(playerName);
+            keyboardMap = customKeyMap.get(playerName).get(page, "f");
+        } catch (Exception ex) {
+            keyboardMap = ConfigHandler.getConfigPath().getShiftFKeyboardMap();
+        }
+        // Cancel Event.
+        e.setCancelled(true);
+        // Execute
+        if (!executeHotkey(player, keyboardMap.getCommands(), !keyboardMap.isCustom())) {
+            CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.isDebugging(), ConfigHandler.getPlugin(),
+                    "Shift-F", player.getName(), "cooldown", "fail", keyboardMap.getGroup(), new Throwable().getStackTrace()[0]);
+            return;
+        }
+        CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.isDebugging(), ConfigHandler.getPlugin(),
+                "Shift-F", player.getName(), "cooldown", "success", keyboardMap.getGroup(), new Throwable().getStackTrace()[0]);
     }
+
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerItemHeld(PlayerItemHeldEvent e) {
-        if (!ConfigHandler.getConfigPath().isHotkeyKeyboard()) {
+        if (!ConfigHandler.getConfigPath().isDoubleShift() || e.isCancelled()) {
             return;
         }
         Player player = e.getPlayer();
-        if (!player.isSneaking()) {
-            return;
-        }
         String playerName = player.getName();
-        int newSlot = e.getNewSlot();
-        int previousSlot = e.getPreviousSlot();
-        if (newSlot == previousSlot - 1 || newSlot == previousSlot + 1) {
-            return;
-        } else if (previousSlot == 0 && newSlot == 9 || previousSlot == 9 && newSlot == 0) {
+        if (!triggerMap.containsKey(playerName)) {
             return;
         }
-        KeyboardMap keyboardMap = ConfigHandler.getConfigPath().getHotkeyKeyboardProp().get(newSlot);
+        String key = String.valueOf(e.getNewSlot());
+        KeyboardMap keyboardMap;
+        try {
+            int page = triggerMap.get(playerName);
+            keyboardMap = customKeyMap.get(playerName).get(page, key);
+        } catch (Exception ex) {
+            keyboardMap = ConfigHandler.getConfigPath().getDoubleShiftProp().get(key);
+        }
         if (keyboardMap == null) {
             return;
         }
-        if (!CorePlusAPI.getPlayerManager().hasPermission(player, "hotkeyplus.hotkey.keyboard.*") &&
-                !CorePlusAPI.getPlayerManager().hasPermission(player, "hotkeyplus.hotkey.keyboard." + keyboardMap.getGroupName())) {
+        // Permission
+        if (!CorePlusAPI.getPlayerManager().hasPerm(ConfigHandler.getPluginName(), player, "hotkeyplus.hotkey.doubleshift.*") &&
+                !CorePlusAPI.getPlayerManager().hasPerm(ConfigHandler.getPluginName(), player, "hotkeyplus.hotkey.keyboard." + keyboardMap.getGroup())) {
             return;
         }
+        // Duplicate Event
+        if (onDuplicate(player)) {
+            return;
+        }
+        // Cancel Event.
+        e.setCancelled(true);
+        triggerMap.remove(playerName);
+        // Execute
+        if (!executeHotkey(player, keyboardMap.getCommands(), !keyboardMap.isCustom())) {
+            CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.isDebugging(), ConfigHandler.getPlugin(),
+                    "Double-Shift", player.getName(), "cooldown", "fail", keyboardMap.getGroup(), new Throwable().getStackTrace()[0]);
+            return;
+        }
+        CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.isDebugging(), ConfigHandler.getPlugin(),
+                "Hotkey", playerName, "final", "sucess", keyboardMap.getGroup(), new Throwable().getStackTrace()[0]);
+    }
+
+
+    private void addTrigger(Player player) {
+        trigMap.put(player.getName(), System.currentTimeMillis());
+    }
+
+    private boolean isTrigger(Player player) {
+        long playerCD = 0L;
+        if (trigMap.containsKey(player.getName())) {
+            playerCD = trigMap.get(player.getName());
+        }
+        return System.currentTimeMillis() - playerCD < ConfigHandler.getConfigPath().getDoubleShiftInterval();
+    }
+
+    private boolean onDuplicate(Player player) {
+        long cooldown = 0L;
+        if (cooldownMap.containsKey(player.getName())) {
+            cooldown = cooldownMap.get(player.getName());
+        }
+        return System.currentTimeMillis() - cooldown < 50;
+    }
+
+    private boolean onCooldown(Player player) {
+        long cooldown = 0L;
+        if (cooldownMap.containsKey(player.getName())) {
+            cooldown = cooldownMap.get(player.getName());
+        }
+        return System.currentTimeMillis() - cooldown < ConfigHandler.getConfigPath().getHotkeyCdInterval();
+    }
+
+    private void addCooldown(Player player) {
+        cooldownMap.put(player.getWorld().getName() + "." + player.getName(), System.currentTimeMillis());
+    }
+
+    private boolean executeHotkey(Player player, List<String> commands, boolean placeholder) {
         if (ConfigHandler.getConfigPath().isHotkeyCooldown()) {
-            String onCD = onCD(player);
-            if (onCD.equals("true")) {
-                if (onCDDuplicate(player)) {
-                    e.setCancelled(keyboardMap.isCancel());
-                    return;
-                }
-                addCDDuplicate(player);
-                if (ConfigHandler.getConfigPath().isHotkeyCooldownMsg()) {
+            if (onCooldown(player)) {
+                if (ConfigHandler.getConfigPath().isHotkeyCdMsg()) {
                     CorePlusAPI.getLangManager().sendLangMsg(ConfigHandler.getPrefix(), "Message.cooldown", player);
                 }
-                e.setCancelled(keyboardMap.isCancel());
-                CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPlugin(), "Hotkey", playerName, "cooldown", "return", "Keyboard " + newSlot,
-                        new Throwable().getStackTrace()[0]);
-                return;
-            } else if (onCD.equals("")) {
-                e.setCancelled(keyboardMap.isCancel());
-                return;
+                return false;
             }
-            addCD(player);
+            addCooldown(player);
         }
-        CorePlusAPI.getCommandManager().executeCmdList(ConfigHandler.getPrefix(), player, keyboardMap.getCommands(), true);
-        e.setCancelled(keyboardMap.isCancel());
-        CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPlugin(), "Hotkey", playerName, "final", "return", "Keyboard",
-                new Throwable().getStackTrace()[0]);
-    }
-
-    private String onCD(Player player) {
-        long playersCDList = 0L;
-        if (cdMap.containsKey(player.getWorld().getName() + "." + player.getName())) {
-            playersCDList = cdMap.get(player.getWorld().getName() + "." + player.getName());
-        }
-        long cdLast = System.currentTimeMillis() - playersCDList;
-        // The minimum cd (Not send message)
-        if (cdLast < 50) {
-            return "";
-        }
-        if (cdLast < ConfigHandler.getConfigPath().getHotkeyCooldownInt()) {
-            return "true";
-        } else {
-            return "false";
-        }
-    }
-
-    private void addCD(Player player) {
-        cdMap.put(player.getWorld().getName() + "." + player.getName(), System.currentTimeMillis());
-    }
-
-    // The minimum cd (Not send message)
-    private boolean onCDDuplicate(Player player) {
-        long playersCDList = 0L;
-        if (cdDuplicateMap.containsKey(player.getWorld().getName() + "." + player.getName())) {
-            playersCDList = cdDuplicateMap.get(player.getWorld().getName() + "." + player.getName());
-        }
-        long cdLast = System.currentTimeMillis() - playersCDList;
-        return cdLast < ConfigHandler.getConfigPath().getHotkeyCooldownInt();
-    }
-
-    private void addCDDuplicate(Player player) {
-        cdDuplicateMap.put(player.getWorld().getName() + "." + player.getName(), System.currentTimeMillis());
+        CorePlusAPI.getCommandManager().executeCmdList(ConfigHandler.getPluginName(), player, commands, placeholder);
+        return true;
     }
 }

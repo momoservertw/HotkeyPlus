@@ -2,80 +2,96 @@
 #  Spigot: https://www.spigotmc.org/resources/HotkeyPlus.85995/
 #  Wiki: https://github.com/momoservertw/HotkeyPlus/wiki
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
-Config-Version: 2
+Config-Version: 1
 
 # To add cool hotkeys in your server.
 # More information: https://github.com/momoservertw/HotkeyPlus/wiki/Hotkey
 HotKey:
-  Enable: true
-  Keyboard:
+  Enable: false
+  Settings:
+    Cooldown:
+      Enable: true
+      Interval: 80
+      Message: false
+  Shift-F:
     Enable: true
+    Commands:
+      - "console: say %player% execute command - Shift-F: command"
+  # Double shift to show the hotkey menu.
+  Double-Shift:
+    Enable: true
+    # Allow player to custom the hotkey. They can execute commands or send chat messages.
+    # Need MySQL database, and set the MySQL setting in CorePlus.yml and create a database named "hotkeyplus".
+    # Permission: hotkeyplus.doubleshift.custom
+    # Command: /hotkeyplus custom <key> <page> <commands>
+    Custom:
+      # Changed this option need to restart the server.
+      Enable: false
+      # They can execute multiple commands by adding ";;".
+      # For example, "/pvp on;;I will kill everyone".
+      Commands:
+        Limit: 3
+        Black-List: []
     Settings:
-      Cooldown:
-        Enable: true
-        Interval: 20
-        Message: false
+      Shift-Interval: 20
+      Menu:
+        Format:
+          Main: "%message%&8|| &fClose: Shift &8|| &f◀ ▶ Change Page"
+          Separate: " &8|&r "
+          Key: "&a%key%: &e"
+        Auto-Cancel:
+          Enable: true
+          Time: 10
     Groups:
-      ShiftF:
+      Page1-1:
         Enable: true
-        Slot: -1
-        Cancel: true
+        Page: 1
+        # Available: 1~9, f
+        Key: 1
+        Sequence: 1
+        Display: "Action1"
         Commands:
-          - "console: say command Shift + F"
-      Shift1:
+          - "console: say %player% execute command - Double-Shift: Page1-1"
+      Page1-2:
         Enable: true
-        Slot: 0
-        Cancel: true
+        Page: 1
+        Key: 2
+        Sequence: 2
+        Display: "Action1"
         Commands:
-          - "console: say command Shift + 1"
-      Shift2:
+          - "console: say %player% execute command - Double-Shift: 1-2"
+      Page1-3:
         Enable: true
-        Slot: 1
-        Cancel: true
+        Page: 1
+        Key: 3
+        Sequence: 3
+        Display: "Action3"
         Commands:
-          - "console: say command Shift + 2"
-      Shift3:
+          - "console: say %player% execute command - Double-Shift: 1-3"
+      Page1-4:
         Enable: true
-        Slot: 2
-        Cancel: true
+        Page: 1
+        Key: 4
+        Sequence: 4
+        Display: "Action4"
         Commands:
-          - "console: say command Shift + 3"
-      Shift4:
+          - "console: say %player% execute command - Double-Shift: 1-4"
+      Page1-5:
         Enable: true
-        Slot: 3
-        Cancel: true
+        Page: 1
+        Key: 5
+        Sequence: 5
+        Display: "Action5"
         Commands:
-          - "console: say command Shift + 4"
-      Shift5:
+          - "console: say %player% execute command - Double-Shift: 1-5"
+      Page2-1:
         Enable: true
-        Slot: 4
-        Cancel: true
+        Page: 2
+        Key: 1
+        Sequence: 1
+        Display: "Action1"
         Commands:
-          - "console: say command Shift + 5"
-      Shift6:
-        Enable: true
-        Slot: 5
-        Cancel: true
-        Commands:
-          - "console: say command Shift + 6"
-      Shift7:
-        Enable: true
-        Slot: 6
-        Cancel: true
-        Commands:
-          - "console: say command Shift + 7"
-      Shift8:
-        Enable: true
-        Slot: 7
-        Cancel: true
-        Commands:
-          - "console: say command Shift + 8"
-      Shift9:
-        Enable: true
-        Slot: 8
-        Cancel: true
-        Commands:
-          - "console: say command Shift + 9"
+          - "console: say %player% execute command - Double-Shift: Page2-1"
 
 Message:
   prefix: "&f[&eHotkeyPlus&f] &r"

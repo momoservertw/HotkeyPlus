@@ -21,7 +21,7 @@ public class ConfigHandler {
         genConfigFile("config.yml");
         setConfigPath(new ConfigPath());
         if (!reload) {
-            CorePlusAPI.getUpdateManager().check(getPrefix(), Bukkit.getConsoleSender(),
+            CorePlusAPI.getUpdateManager().check(getPlugin(), Bukkit.getConsoleSender(),
                     HotkeyPlus.getInstance().getDescription().getName(),
                     HotkeyPlus.getInstance().getDescription().getVersion(), true);
         }
@@ -50,7 +50,7 @@ public class ConfigHandler {
             try {
                 HotkeyPlus.getInstance().saveResource(fileName, false);
             } catch (Exception e) {
-                CorePlusAPI.getLangManager().sendErrorMsg(getPrefix(), "&cCannot save " + fileName + " to disk!");
+                CorePlusAPI.getLangManager().sendErrorMsg(getPluginName(), "&cCannot save " + fileName + " to disk!");
                 return;
             }
         }
@@ -74,7 +74,7 @@ public class ConfigHandler {
         File filePath = HotkeyPlus.getInstance().getDataFolder();
         switch (fileName) {
             case "config.yml":
-                configVersion = 2;
+                configVersion = 1;
                 break;
         }
         getConfigData(filePath, fileName);
@@ -114,4 +114,11 @@ public class ConfigHandler {
         return "[" + HotkeyPlus.getInstance().getDescription().getName() + "] ";
     }
 
+    public static String getPluginName() {
+        return CorePlus.getInstance().getDescription().getName();
+    }
+
+    public static boolean isDebugging() {
+        return ConfigHandler.getConfig("config.yml").getBoolean("Debugging");
+    }
 }

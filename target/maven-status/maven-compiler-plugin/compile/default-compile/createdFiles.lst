@@ -1,8 +1,0 @@
-tw\momocraft\hotkeyplus\handlers\RegisterHandler.class
-tw\momocraft\hotkeyplus\utils\KeyboardMap.class
-tw\momocraft\hotkeyplus\Commands.class
-tw\momocraft\hotkeyplus\TabComplete.class
-tw\momocraft\hotkeyplus\listeners\Hotkey.class
-tw\momocraft\hotkeyplus\handlers\ConfigHandler.class
-tw\momocraft\hotkeyplus\HotkeyPlus.class
-tw\momocraft\hotkeyplus\utils\ConfigPath.class

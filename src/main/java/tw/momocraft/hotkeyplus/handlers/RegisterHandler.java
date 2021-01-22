@@ -13,7 +13,7 @@ public class RegisterHandler {
         HotkeyPlus.getInstance().getCommand("HotkeyPlus").setTabCompleter(new TabComplete());
 
         HotkeyPlus.getInstance().getServer().getPluginManager().registerEvents(new Hotkey(), HotkeyPlus.getInstance());
-        CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.getPlugin(), "Register-Event", "Hotkey", "Hotkey", "continue",
-                new Throwable().getStackTrace()[0]);
+        CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.isDebugging(), ConfigHandler.getPlugin(),
+                "Register-Event", "Hotkey", "Hotkey", "continue", new Throwable().getStackTrace()[0]);
     }
 }

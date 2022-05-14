@@ -4,7 +4,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import tw.momocraft.coreplus.api.CorePlusAPI;
 import tw.momocraft.hotkeyplus.handlers.ConfigHandler;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class ConfigPath {
     public ConfigPath() {
@@ -14,10 +16,13 @@ public class ConfigPath {
     //  ============================================== //
     //         Message Variables                       //
     //  ============================================== //
-    private String msgTitle;
-    private String msgHelp;
-    private String msgReload;
-    private String msgVersion;
+    private String msgCmdTitle;
+    private String msgCmdHelp;
+    private String msgCmdReload;
+    private String msgCmdVersion;
+    private String msgCmdPrompt;
+
+    private String msgPrompt;
 
     //  ============================================== //
     //         Hotkey Variables                        //
@@ -26,21 +31,10 @@ public class ConfigPath {
     private boolean hotkeyCooldown;
     private int hotkeyCdInterval;
     private boolean hotkeyCdMsg;
+    private boolean hotkeyPrompt;
+    private String hotkeyPromptCmd;
 
-    private boolean shiftF;
-    private KeyboardMap shiftFKeyboardMap;
-
-    private boolean doubleShift;
-    private int doubleShiftInterval;
-    private String doubleShiftMenuMain;
-    private String doubleShiftMenuSeparate;
-    private String doubleShiftMenuKey;
-    private boolean doubleShiftMenuCancel;
-    private int doubleShiftMenuCancelTime;
-    private boolean doubleShiftCustom;
-    private int doubleShiftCustomCmdLimit;
-    private List<String> doubleShiftCustomBlackCmds;
-    private final Map<String, KeyboardMap> doubleShiftProp = new HashMap<>();
+    private final Map<String, HotkeyMap> hotkeyProp = new HashMap<>();
 
     //  ============================================== //
     //         Setup all configuration                 //
@@ -54,10 +48,13 @@ public class ConfigPath {
     //         Message Setter                          //
     //  ============================================== //
     private void setupMsg() {
-        msgTitle = ConfigHandler.getConfig("config.yml").getString("Message.Commands.title");
-        msgHelp = ConfigHandler.getConfig("config.yml").getString("Message.Commands.help");
-        msgReload = ConfigHandler.getConfig("config.yml").getString("Message.Commands.reload");
-        msgVersion = ConfigHandler.getConfig("config.yml").getString("Message.Commands.version");
+        msgCmdTitle = ConfigHandler.getConfig("message.yml").getString("Message.Commands.title");
+        msgCmdHelp = ConfigHandler.getConfig("message.yml").getString("Message.Commands.help");
+        msgCmdReload = ConfigHandler.getConfig("message.yml").getString("Message.Commands.reload");
+        msgCmdVersion = ConfigHandler.getConfig("message.yml").getString("Message.Commands.version");
+        msgCmdPrompt = ConfigHandler.getConfig("message.yml").getString("Message.Commands.prompt");
+
+        msgPrompt = ConfigHandler.getConfig("message.yml").getString("Message.HotkeyPlus.prompt");
     }
 
 
@@ -65,69 +62,32 @@ public class ConfigPath {
     //         HotKey Setter                           //
     //  ============================================== //
     private void setHotKey() {
-        hotkey = ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Enable");
-        if (!hotkey) {
+        hotkey = ConfigHandler.getConfig("config.yml").getBoolean("Hotkey.Enable");
+        hotkeyCooldown = ConfigHandler.getConfig("config.yml").getBoolean("Hotkey.Settings.Cooldown.Enable");
+        hotkeyCdInterval = ConfigHandler.getConfig("config.yml").getInt("Hotkey.Settings.Cooldown.Interval") * 1000;
+        hotkeyCdMsg = ConfigHandler.getConfig("config.yml").getBoolean("Hotkey.Settings.Cooldown.Message");
+        hotkeyPrompt = ConfigHandler.getConfig("config.yml").getBoolean("Hotkey.Settings.Double-Shift-Prompt.Enable");
+        hotkeyPromptCmd = ConfigHandler.getConfig("config.yml").getString("Hotkey.Settings.Double-Shift-Prompt.Command");
+
+        ConfigurationSection hotkeyKeyboardConfig = ConfigHandler.getConfig("config.yml").getConfigurationSection("Hotkey.Groups");
+        if (hotkeyKeyboardConfig == null)
             return;
-        }
-        hotkeyCooldown = ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Shift-F.Settings.Cooldown.Enable");
-        hotkeyCdInterval = ConfigHandler.getConfig("config.yml").getInt("HotKey.Shift-F.Settings.Cooldown.Interval") * 50;
-        hotkeyCdMsg = ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Shift-F.Settings.Cooldown.Message");
-
-        shiftF = ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Shift-F.Enable");
-        shiftFKeyboardMap = new KeyboardMap();
-        shiftFKeyboardMap.setCommands(ConfigHandler.getConfig("config.yml").getStringList("HotKey.Shift-F.Commands"));
-        shiftFKeyboardMap.setGroup("Shift-F");
-
-        doubleShift = ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Double-Shift.Enable");
-        doubleShiftInterval = ConfigHandler.getConfig("config.yml").getInt("HotKey.Double-Shift.Settings.Shift-Interval") * 50;
-        doubleShiftMenuMain = ConfigHandler.getConfig("config.yml").getString("HotKey.Double-Shift.Settings.Menu.Format.Main");
-        doubleShiftMenuSeparate = ConfigHandler.getConfig("config.yml").getString("HotKey.Double-Shift.Settings.Menu.Format.Separate");
-        doubleShiftMenuKey = ConfigHandler.getConfig("config.yml").getString("HotKey.Double-Shift.Settings.Menu.Format.Key");
-        doubleShiftMenuCancel = ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Double-Shift.Settings.Menu.Auto-Cancel.Enable");
-        doubleShiftMenuCancelTime = ConfigHandler.getConfig("config.yml").getInt("HotKey.Double-Shift.Settings.Menu.Auto-Cancel.Time");
-
-        doubleShiftCustom = ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Double-Shift.Custom.Enable");
-        if (doubleShiftCustom) {
-            CorePlusAPI.getMySQLManager().connect(ConfigHandler.getPrefix(), "hotkeyplus");
-            if ()
-        }
-        doubleShiftCustomCmdLimit = ConfigHandler.getConfig("config.yml").getInt("HotKey.Double-Shift.Custom.Commands-Limit");
-        doubleShiftCustomBlackCmds = ConfigHandler.getConfig("config.yml").getStringList("HotKey.Double-Shift.Custom.Black-List");
-
-        ConfigurationSection hotkeyKeyboardConfig = ConfigHandler.getConfig("config.yml").getConfigurationSection("HotKey.Double-Shift.Groups");
-        if (hotkeyKeyboardConfig == null) {
-            return;
-        }
-        KeyboardMap keyboardMap;
-        String key;
-        String page;
-        String sequence;
+        List<String> commands;
         for (String group : hotkeyKeyboardConfig.getKeys(false)) {
-            if (!ConfigHandler.getConfig("config.yml").getBoolean("HotKey.Keyboard.Groups." + group + ".Enable", true)) {
+            if (!ConfigHandler.getConfig("config.yml").getBoolean("Hotkey.Groups." + group + ".Enable", true))
                 continue;
-            }
-            keyboardMap = new KeyboardMap();
-            keyboardMap.setKey(group);
-            key = ConfigHandler.getConfig("config.yml").getString("HotKey.Keyboard.Groups." + group + ".Key");
-            if (key == null || !key.matches("1-9f")) {
-                CorePlusAPI.getLangManager().sendErrorMsg(ConfigHandler.getPluginName(), "You need to set \"Key\" for " + group + " - Available: 1~9, f");
+            commands = ConfigHandler.getConfig("config.yml").getStringList("Hotkey.Groups." + group + ".Commands");
+            if (commands.isEmpty())
                 continue;
-            }
-            keyboardMap.setKey(key);
-            page = ConfigHandler.getConfig("config.yml").getString("HotKey.Keyboard.Groups." + group + ".Page");
-            sequence = ConfigHandler.getConfig("config.yml").getString("HotKey.Keyboard.Groups." + group + ".Sequence");
-            try {
-                keyboardMap.setPage(Integer.parseInt(page));
-                keyboardMap.setSequence(Integer.parseInt(sequence));
-            } catch (Exception e) {
-                CorePlusAPI.getLangManager().sendErrorMsg(ConfigHandler.getPluginName(), "You need to set \"Page\" and \"Sequence\" for " + group);
-                continue;
-            }
-            keyboardMap.setDisplay(ConfigHandler.getConfig("config.yml").getString("HotKey.Keyboard.Groups." + group + ".Display"));
-            keyboardMap.setCommands(ConfigHandler.getConfig("config.yml").getStringList("HotKey.Keyboard.Groups." + group + ".Commands"));
-            doubleShiftProp.put(group, keyboardMap);
-            CorePlusAPI.getLangManager().sendFeatureMsg(ConfigHandler.isDebugging(), ConfigHandler.getPlugin(),
-                    "HotKey", "Double-Shift", "setup", "continue", group, new Throwable().getStackTrace()[0]);
+            HotkeyMap hotkeyMap = new HotkeyMap();
+            hotkeyMap.setGroupName(group);
+            hotkeyMap.setKey(group.split("Shift-")[1].toLowerCase());
+            hotkeyMap.setFeaturePlaceHolder(
+                    ConfigHandler.getConfig("config.yml").getString("Hotkey.Groups." + group + ".PlaceHolder"));
+            hotkeyMap.setCommands(commands);
+            hotkeyProp.put(group, hotkeyMap);
+            CorePlusAPI.getMsg().sendDetailMsg(ConfigHandler.isDebug(), ConfigHandler.getPluginName(),
+                    "Hotkey", "Groups", "setup", "continue", group, new Throwable().getStackTrace()[0]);
         }
     }
 
@@ -135,20 +95,28 @@ public class ConfigPath {
     //  ============================================== //
     //         Message Getter                          //
     //  ============================================== //
-    public String getMsgTitle() {
-        return msgTitle;
+    public String getMsgCmdTitle() {
+        return msgCmdTitle;
     }
 
-    public String getMsgHelp() {
-        return msgHelp;
+    public String getMsgCmdHelp() {
+        return msgCmdHelp;
     }
 
-    public String getMsgReload() {
-        return msgReload;
+    public String getMsgCmdReload() {
+        return msgCmdReload;
     }
 
-    public String getMsgVersion() {
-        return msgVersion;
+    public String getMsgCmdVersion() {
+        return msgCmdVersion;
+    }
+
+    public String getMsgCmdPrompt() {
+        return msgCmdPrompt;
+    }
+
+    public String getMsgPrompt() {
+        return msgPrompt;
     }
 
     //  ============================================== //
@@ -157,7 +125,6 @@ public class ConfigPath {
     public boolean isHotkey() {
         return hotkey;
     }
-
 
     public boolean isHotkeyCooldown() {
         return hotkeyCooldown;
@@ -171,55 +138,15 @@ public class ConfigPath {
         return hotkeyCdMsg;
     }
 
-    public boolean isShiftF() {
-        return shiftF;
+    public boolean isHotkeyPrompt() {
+        return hotkeyPrompt;
     }
 
-    public KeyboardMap getShiftFKeyboardMap() {
-        return shiftFKeyboardMap;
+    public String getHotkeyPromptCmd() {
+        return hotkeyPromptCmd;
     }
 
-    public boolean isDoubleShift() {
-        return doubleShift;
-    }
-
-    public int getDoubleShiftInterval() {
-        return doubleShiftInterval;
-    }
-
-    public String getDoubleShiftMenuMain() {
-        return doubleShiftMenuMain;
-    }
-
-    public String getDoubleShiftMenuSeparate() {
-        return doubleShiftMenuSeparate;
-    }
-
-    public String getDoubleShiftMenuKey() {
-        return doubleShiftMenuKey;
-    }
-
-    public boolean isDoubleShiftMenuCancel() {
-        return doubleShiftMenuCancel;
-    }
-
-    public int getDoubleShiftMenuCancelTime() {
-        return doubleShiftMenuCancelTime;
-    }
-
-    public boolean isDoubleShiftCustom() {
-        return doubleShiftCustom;
-    }
-
-    public int getDoubleShiftCustomCmdLimit() {
-        return doubleShiftCustomCmdLimit;
-    }
-
-    public List<String> getDoubleShiftCustomBlackCmds() {
-        return doubleShiftCustomBlackCmds;
-    }
-
-    public Map<String, KeyboardMap> getDoubleShiftProp() {
-        return doubleShiftProp;
+    public Map<String, HotkeyMap> getHotkeyProp() {
+        return hotkeyProp;
     }
 }

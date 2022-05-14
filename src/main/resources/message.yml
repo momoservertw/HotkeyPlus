@@ -1,0 +1,15 @@
+Config-Version: 1
+
+Message:
+  prefix: "&f[&eHotkeyPlus&f] &r"
+  Commands:
+    title: "&8▩▩▩▩▩▩▩▩▩▩ &dHotkeyPlus &8▩▩▩▩▩▩▩▩▩▩"
+    help: "&f/hotkeyplus help &8- &7This help menu."
+    reload: "&f/hotkeyplus reload &8- &7Reloads config file."
+    version: "&f/hotkeyplus version &8- &7Checks the plugin version and updates."
+    prompt: "&f/hotkeyplus prompt &8- &7Sends help messages to player."
+  HotkeyPlus:
+    prompt: "&eHow to use Hotkey \n
+    1. Click the key shift twice, press and hold for the last time. \n
+    2. Click the key you want to execute. \n
+    &f(F) &7%key_f%, &f(1) &7%key_1%, &f(2) &7%key_2%, &f(3) &7%key_3%, &f(4) &7%key_4%, &f(5) &7%key_5%, &f(6) &7%key_6%, &f(7) &7%key_7%, &f(8) &7%key_8%."

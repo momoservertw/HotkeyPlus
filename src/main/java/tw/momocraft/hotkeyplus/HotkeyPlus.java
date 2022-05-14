@@ -3,7 +3,6 @@ package tw.momocraft.hotkeyplus;
 import org.bukkit.plugin.java.JavaPlugin;
 import tw.momocraft.coreplus.api.CorePlusAPI;
 import tw.momocraft.hotkeyplus.handlers.ConfigHandler;
-import tw.momocraft.hotkeyplus.handlers.RegisterHandler;
 
 public class HotkeyPlus extends JavaPlugin {
     private static HotkeyPlus instance;
@@ -12,13 +11,12 @@ public class HotkeyPlus extends JavaPlugin {
     public void onEnable() {
         instance = this;
         ConfigHandler.generateData(false);
-        RegisterHandler.registerEvents();
-        CorePlusAPI.getLangManager().sendConsoleMsg(ConfigHandler.getPlugin(), "&fhas been Enabled.");
+        CorePlusAPI.getMsg().sendConsoleMsg(ConfigHandler.getPluginPrefix(), "&fhas been Enabled.");
     }
 
     @Override
     public void onDisable() {
-        CorePlusAPI.getLangManager().sendConsoleMsg(ConfigHandler.getPlugin(), "&fhas been Disabled.");
+        CorePlusAPI.getMsg().sendConsoleMsg(ConfigHandler.getPluginPrefix(), "&fhas been Disabled.");
     }
 
     public static HotkeyPlus getInstance() {

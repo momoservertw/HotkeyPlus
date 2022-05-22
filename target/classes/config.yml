@@ -3,6 +3,8 @@
 #  Wiki: https://github.com/momoservertw/HotkeyPlus/wiki
 # ░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
 Config-Version: 2
+Debugging: false
+Check-Updates: true
 
 HotKey:
   Enable: false

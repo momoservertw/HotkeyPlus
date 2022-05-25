@@ -25,11 +25,16 @@ public class Hotkey implements Listener {
     public void onPlayerToggleSneakEvent(PlayerToggleSneakEvent e) {
         if (!ConfigHandler.getConfigPath().isHotkey())
             return;
-        if (!e.isSneaking())
-            return;
         Player player = e.getPlayer();
         String playerName = player.getName();
-        if (isStarting(player.getName())) {
+        if (!e.isSneaking()) {
+            if (lastKeyMap.containsKey(playerName)) {
+                player.getInventory().setHeldItemSlot(lastKeyMap.get(playerName));
+                lastKeyMap.remove(player.getName());
+            }
+            return;
+        }
+        if (isStarting(playerName)) {
             lastKeyMap.put(playerName, player.getInventory().getHeldItemSlot());
             player.getInventory().setHeldItemSlot(8);
             if (ConfigHandler.getConfigPath().isHotkeyHelp()) {
@@ -53,7 +58,7 @@ public class Hotkey implements Listener {
         if (player.getInventory().getHeldItemSlot() != 8)
             return;
         executeHotkey(player, "F");
-        player.setHealthScale(lastKeyMap.get(player.getName()));
+        e.setCancelled(true);
     }
 
 
@@ -61,21 +66,22 @@ public class Hotkey implements Listener {
     public void onPlayerItemHeld(PlayerItemHeldEvent e) {
         if (!ConfigHandler.getConfigPath().isHotkey())
             return;
-        if (e.getPreviousSlot() != 8 || e.getNewSlot() == 8)
+        int newSlot = e.getNewSlot();
+        if (e.getPreviousSlot() != 8 || newSlot == 8)
             return;
         Player player = e.getPlayer();
         if (!player.isSneaking())
             return;
-        executeHotkey(player, String.valueOf(e.getNewSlot() + 1));
-        player.setHealthScale(lastKeyMap.get(player.getName()));
+        executeHotkey(player, String.valueOf(newSlot + 1));
+        e.setCancelled(true);
     }
 
     private void executeHotkey(Player player, String key) {
-        String playerName = player.getName();
         HotkeyMap hotkeyMap = ConfigHandler.getConfigPath().getHotkeyProp().get("Shift-" + key);
         if (hotkeyMap == null)
             return;
         // Permission
+        String playerName = player.getName();
         if (!CorePlusAPI.getPlayer().hasPerm(player, "hotkeyplus.hotkey.*") &&
                 !CorePlusAPI.getPlayer().hasPerm(player, "hotkeyplus.hotkey." + key)) {
             CorePlusAPI.getMsg().sendDetailMsg(ConfigHandler.isDebug(), ConfigHandler.getPluginName(),

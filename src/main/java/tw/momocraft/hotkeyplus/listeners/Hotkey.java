@@ -18,6 +18,7 @@ import java.util.Map;
 public class Hotkey implements Listener {
 
     private final Map<String, Long> startMap = new HashMap<>();
+    private final Map<String, Integer> lastKeyMap = new HashMap<>();
     private final Map<String, Long> cdMap = new HashMap<>();
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -27,10 +28,12 @@ public class Hotkey implements Listener {
         if (!e.isSneaking())
             return;
         Player player = e.getPlayer();
+        String playerName = player.getName();
         if (isStarting(player.getName())) {
+            lastKeyMap.put(playerName, player.getInventory().getHeldItemSlot());
             player.getInventory().setHeldItemSlot(8);
-            if (ConfigHandler.getConfigPath().isHotkeyPrompt()) {
-                String command = ConfigHandler.getConfigPath().getHotkeyPromptCmd();
+            if (ConfigHandler.getConfigPath().isHotkeyHelp()) {
+                String command = ConfigHandler.getConfigPath().getHotkeyHelpCmd();
                 command = CorePlusAPI.getMsg().transHolder(ConfigHandler.getPluginName(),
                         player, command);
                 CorePlusAPI.getCmd().sendCmd(ConfigHandler.getPluginName(), player, command);
@@ -50,6 +53,7 @@ public class Hotkey implements Listener {
         if (player.getInventory().getHeldItemSlot() != 8)
             return;
         executeHotkey(player, "F");
+        player.setHealthScale(lastKeyMap.get(player.getName()));
     }
 
 
@@ -63,6 +67,7 @@ public class Hotkey implements Listener {
         if (!player.isSneaking())
             return;
         executeHotkey(player, String.valueOf(e.getNewSlot() + 1));
+        player.setHealthScale(lastKeyMap.get(player.getName()));
     }
 
     private void executeHotkey(Player player, String key) {

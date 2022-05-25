@@ -31,8 +31,8 @@ public class ConfigPath {
     private boolean hotkeyCooldown;
     private int hotkeyCdInterval;
     private boolean hotkeyCdMsg;
-    private boolean hotkeyPrompt;
-    private String hotkeyPromptCmd;
+    private boolean hotkeyHelp;
+    private String hotkeyHelpCmd;
 
     private final Map<String, HotkeyMap> hotkeyProp = new HashMap<>();
 
@@ -66,8 +66,8 @@ public class ConfigPath {
         hotkeyCooldown = ConfigHandler.getConfig("config.yml").getBoolean("Hotkey.Settings.Cooldown.Enable");
         hotkeyCdInterval = ConfigHandler.getConfig("config.yml").getInt("Hotkey.Settings.Cooldown.Interval") * 1000;
         hotkeyCdMsg = ConfigHandler.getConfig("config.yml").getBoolean("Hotkey.Settings.Cooldown.Message");
-        hotkeyPrompt = ConfigHandler.getConfig("config.yml").getBoolean("Hotkey.Settings.Double-Shift-Prompt.Enable");
-        hotkeyPromptCmd = ConfigHandler.getConfig("config.yml").getString("Hotkey.Settings.Double-Shift-Prompt.Command");
+        hotkeyHelp = ConfigHandler.getConfig("config.yml").getBoolean("Hotkey.Settings.Help.Enable");
+        hotkeyHelpCmd = ConfigHandler.getConfig("config.yml").getString("Hotkey.Settings.Help.Command");
 
         ConfigurationSection hotkeyKeyboardConfig = ConfigHandler.getConfig("config.yml").getConfigurationSection("Hotkey.Groups");
         if (hotkeyKeyboardConfig == null)
@@ -138,12 +138,12 @@ public class ConfigPath {
         return hotkeyCdMsg;
     }
 
-    public boolean isHotkeyPrompt() {
-        return hotkeyPrompt;
+    public boolean isHotkeyHelp() {
+        return hotkeyHelp;
     }
 
-    public String getHotkeyPromptCmd() {
-        return hotkeyPromptCmd;
+    public String getHotkeyHelpCmd() {
+        return hotkeyHelpCmd;
     }
 
     public Map<String, HotkeyMap> getHotkeyProp() {

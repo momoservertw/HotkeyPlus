@@ -6,10 +6,10 @@ Config-Version: 2
 Debugging: false
 Check-Updates: true
 
-HotKey:
+Hotkey:
   Enable: false
   Settings:
-    Double-Shift-Prompt:
+    Help:
       Enable: true
       Command: "actionbar: &eHold the shift and click the hotkey \"f\" and \"0~8\"."
     Cooldown:
